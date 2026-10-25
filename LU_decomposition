@@ -1,0 +1,55 @@
+import numpy as np
+
+A = np.array([[3.0, 1.0, -4.0], [-2.0, 3.0, 1.0], [2.0, 0.0, 5.0]])
+
+b = np.array([7.0, -5.0, 10.0])
+
+def lu_decomposition(A, b):
+  n = len(b)
+ 
+  L = np.zeros((n, n))
+  U = np.zeros((n, n))
+
+ 
+  for i in range(n):
+  
+    L[i, i] = 1.0
+
+
+    for j in range(i, n):
+      soma = sum(L[i, k] * U[k, j] for k in range(i))
+      U[i, j] = A[i, j] - soma
+
+
+    for j in range(i + 1, n):
+      soma = sum(L[j, k] * U[k, i] for k in range(i))
+      if U[i, i] == 0:
+        raise ValueError("Pivot nol ditemukan, dekomposisi LU gagal.")
+      L[j, i] = (A[j, i] - soma) / U[i, i]
+
+  print("=== Matriks L (Lower) ===")
+  print(np.round(L, 4))
+  print("\n=== Matriks U (Upper) ===")
+  print(np.round(U, 4))
+  print("-" * 45)
+
+
+  y = np.zeros(n)
+  for i in range(n):
+    soma = sum(L[i, k] * y[k] for k in range(i))
+    y[i] = b[i] - soma
+
+
+  x = np.zeros(n)
+  for i in range(n - 1, -1, -1):
+    soma = sum(U[i, k] * x[k] for k in range(i + 1, n))
+    x[i] = (y[i] - soma) / U[i, i]
+
+  return y, x
+
+y_vektor, hasil_solusi = lu_decomposition(A, b)
+
+print("\n=== Hasil Solusi Akhir ===")
+print(f"x1 = {hasil_solusi[0]:.4f}  (Pecahan: 260/81)")
+print(f"x2 = {hasil_solusi[1]:.4f}  (Pecahan: 19/81)")
+print(f"x3 = {hasil_solusi[2]:.4f}  (Pecahan: 58/81)")
